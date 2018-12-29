@@ -78,7 +78,7 @@ namespace dlinktester
                         try
                         {
                             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                            if (response.StatusCode == HttpStatusCode.OK)
+                            if (response.StatusCode == HttpStatusCode.OK | checkBox2.Checked)
                             {
                                 Console.WriteLine("GOT 200");
                                 client.Credentials = new NetworkCredential(currentcreds[0], currentcreds[1]);
@@ -108,7 +108,7 @@ namespace dlinktester
                                     }
                                     this.Invoke(new MethodInvoker(delegate ()
                                     {
-                                        listBox1.Items.Add(currentip);
+                                        listBox1.Items.Add(currentip + " : " + currentcreds[0] + ":" + currentcreds[1]);
                                         pictureBox1.Image = new Bitmap(b);
                                     }));
                                     Random random = new Random();
@@ -129,7 +129,7 @@ namespace dlinktester
                             }
                             else
                             {
-                                //Console.WriteLine((int)response.StatusCode);
+                                Console.WriteLine((int)response.StatusCode);
                             }
                         }
                         catch(Exception ex)
@@ -189,7 +189,9 @@ namespace dlinktester
             button2.Enabled = false;
             button3.Enabled = false;
             button4.Enabled = false;
+            button5.Enabled = false;
             checkBox1.Enabled = false;
+            checkBox2.Enabled = false;
 
             if (checkBox1.Checked)
             {
