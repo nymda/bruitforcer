@@ -53,5 +53,45 @@ namespace dlinktester
             File.WriteAllText(appdata + "bruitsettings.dat", final);
             this.Close();
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        bool moving;
+        Point offset;
+        Point original;
+
+        void panel1_PreviewMouseDown(object sender, MouseEventArgs e)
+        {
+            ((Control)sender).Capture = false;
+            moving = true;
+            panel1.Capture = true;
+            offset = MousePosition;
+            original = this.Location;
+        }
+
+        void panel1_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!moving)
+                return;
+
+            int x = original.X + MousePosition.X - offset.X;
+            int y = original.Y + MousePosition.Y - offset.Y;
+
+            this.Location = new Point(x, y);
+        }
+
+        void panel1_PreviewMouseUp(object sender, MouseEventArgs e)
+        {
+            moving = false;
+            panel1.Capture = false;
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

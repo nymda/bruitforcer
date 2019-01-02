@@ -52,6 +52,7 @@
             // 
             // pictureBox1
             // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.Location = new System.Drawing.Point(90, 36);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(256, 233);
@@ -170,7 +171,7 @@
             this.button6.ForeColor = System.Drawing.Color.Red;
             this.button6.Location = new System.Drawing.Point(499, 3);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(24, 23);
+            this.button6.Size = new System.Drawing.Size(23, 23);
             this.button6.TabIndex = 12;
             this.button6.Text = "X";
             this.button6.UseVisualStyleBackColor = true;
@@ -198,6 +199,7 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(526, 30);
             this.panel1.TabIndex = 14;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_PreviewMouseDown);
             this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_PreviewMouseMove);
             this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_PreviewMouseUp);
@@ -208,7 +210,7 @@
             this.button7.ForeColor = System.Drawing.Color.Orange;
             this.button7.Location = new System.Drawing.Point(469, 3);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(24, 23);
+            this.button7.Size = new System.Drawing.Size(23, 23);
             this.button7.TabIndex = 15;
             this.button7.Text = "V";
             this.button7.UseVisualStyleBackColor = true;
