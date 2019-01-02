@@ -47,8 +47,8 @@ namespace dlinktester
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e); 
-            e.Graphics.DrawRectangle(new Pen(Color.White, 3), this.DisplayRectangle);
-            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid);
+            //e.Graphics.DrawRectangle(new Pen(Color.White, 3), this.DisplayRectangle);
+            //ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid);
         }
 
         public class MyWebClient : WebClient
@@ -338,7 +338,8 @@ namespace dlinktester
         private void timer1_Tick(object sender, EventArgs e)
         {
 
-            label2.ForeColor = Rainbow(rainbow);
+            //label2.ForeColor = Rainbow(rainbow);
+            panel2.BackColor = Rainbow(rainbow);
             Console.WriteLine(rainbow);
             rainbow = float.Parse((rainbow + 0.01).ToString());
             if(rainbow == 1)
