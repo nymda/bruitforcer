@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -31,12 +32,23 @@ namespace dlinktester
         public string appdatafull = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\bruitsettings.dat";
         public string settings = "";
         string[] settingdata;
+        public float rainbow;
 
         public string logdata = "";
+
+        public event System.Windows.Forms.MouseEventHandler MouseDown;
 
         public Form1()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.None;         
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e); 
+            e.Graphics.DrawRectangle(new Pen(Color.White, 3), this.DisplayRectangle);
+            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid, Color.LightGray, 2, ButtonBorderStyle.Solid);
         }
 
         public class MyWebClient : WebClient
@@ -250,6 +262,89 @@ namespace dlinktester
             }
             settings = File.ReadAllText(appdatafull);
             settingdata = settings.Split(':');
+
+            //uncomment for rainbows
+            //timer1.Start();
+        }
+
+        public static Color Rainbow(float progress)
+        {
+            float div = (Math.Abs(progress % 1) * 6);
+            int ascending = (int)((div % 1) * 255);
+            int descending = 255 - ascending;
+
+            switch ((int)div)
+            {
+                case 0:
+                    return Color.FromArgb(255, 255, ascending, 0);
+                case 1:
+                    return Color.FromArgb(255, descending, 255, 0);
+                case 2:
+                    return Color.FromArgb(255, 0, 255, ascending);
+                case 3:
+                    return Color.FromArgb(255, 0, descending, 255);
+                case 4:
+                    return Color.FromArgb(255, ascending, 0, 255);
+                default: // case 5:
+                    return Color.FromArgb(255, 255, 0, descending);
+            }
+        }
+
+        private void mouseMove(MouseEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool moving;
+        Point offset;
+        Point original;
+
+        void panel1_PreviewMouseDown(object sender, MouseEventArgs e)
+        {
+            ((Control)sender).Capture = false;
+            moving = true;
+            panel1.Capture = true;
+            offset = MousePosition;
+            original = this.Location;
+        }
+
+        void panel1_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!moving)
+                return;
+
+            int x = original.X + MousePosition.X - offset.X;
+            int y = original.Y + MousePosition.Y - offset.Y;
+
+            this.Location = new Point(x, y);
+        }
+
+        void panel1_PreviewMouseUp(object sender, MouseEventArgs e)
+        {
+            moving = false;
+            panel1.Capture = false;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+            label2.ForeColor = Rainbow(rainbow);
+            Console.WriteLine(rainbow);
+            rainbow = float.Parse((rainbow + 0.01).ToString());
+            if(rainbow == 1)
+            {
+                rainbow = 0;
+            }
         }
     }
 }
