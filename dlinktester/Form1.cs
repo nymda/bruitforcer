@@ -22,12 +22,17 @@ namespace dlinktester
 { 
     public partial class Form1 : Form
     {
+        public string workingIpPath = "";
+        public string allIpPath = "";
         public string[] IPs;
         public string[] Userlist;
         public string ipsFileName;
         public string passlistFileName;
         public int counter;
         public int iplen;
+        public List<String> doneIPs = new List<String> { };
+        public int trueCounter = 0;
+        public int perc;
         public string directory = System.Reflection.Assembly.GetEntryAssembly().Location + @"\";
         public string appdatafull = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\bruitsettings.dat";
         public string settings = "";
@@ -40,8 +45,7 @@ namespace dlinktester
 
         public Form1()
         {
-            InitializeComponent();
-            this.FormBorderStyle = FormBorderStyle.None;         
+            InitializeComponent();     
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -87,8 +91,22 @@ namespace dlinktester
                         request.Credentials = new NetworkCredential(currentcreds[0], currentcreds[1]);
                         request.Timeout = 2000;
                         Console.WriteLine(currentcreds[0] + " : " + currentcreds[1]);
+                        if (!(doneIPs.Contains(currentip)))
+                        {
+                            doneIPs.Add(currentip);
+                            trueCounter++;
+
+                            perc = (trueCounter / iplen) * 100;
+                            progressBar1.Value = perc;
+                            this.Invoke(new MethodInvoker(delegate ()
+                            {
+                                listBox2.Items.Add(currentip);
+                                label2.Text = perc.ToString() + "%";
+                            }));
+                        }
                         try
                         {
+                            File.AppendAllText(allIpPath, currentip);
                             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                             if (response.StatusCode == HttpStatusCode.OK | checkBox2.Checked)
                             {
@@ -128,9 +146,9 @@ namespace dlinktester
                                     string rand = new string(Enumerable.Repeat(chars, 5).Select(s => s[random.Next(s.Length)]).ToArray());
                                     b.Save(directory + rand + ".jpg", ImageFormat.Jpeg);
                                     b.Dispose();
-                                    logdata = logdata + "\n" + currentip + " > " + rand + ".jpg";
-                                    Console.WriteLine(logdata);
-                                    File.WriteAllText(directory + "/log.txt", logdata);
+                                    File.AppendAllText(allIpPath, currentip);
+                                    File.AppendAllText(workingIpPath, currentip);
+                                    listBox2.Items.Add(currentip);
                                     break;
                                 }
                                 catch
@@ -141,12 +159,12 @@ namespace dlinktester
                             }
                             else
                             {
-                                Console.WriteLine((int)response.StatusCode);
+
                             }
                         }
                         catch(Exception ex)
                         {
-                            //Console.WriteLine(ex);
+
                         }
 
                     }
@@ -303,7 +321,6 @@ namespace dlinktester
         {
             ((Control)sender).Capture = false;
             moving = true;
-            panel1.Capture = true;
             offset = MousePosition;
             original = this.Location;
         }
@@ -317,12 +334,6 @@ namespace dlinktester
             int y = original.Y + MousePosition.Y - offset.Y;
 
             this.Location = new Point(x, y);
-        }
-
-        void panel1_PreviewMouseUp(object sender, MouseEventArgs e)
-        {
-            moving = false;
-            panel1.Capture = false;
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -339,7 +350,6 @@ namespace dlinktester
         {
 
             //label2.ForeColor = Rainbow(rainbow);
-            panel2.BackColor = Rainbow(rainbow);
             Console.WriteLine(rainbow);
             rainbow = float.Parse((rainbow + 0.01).ToString());
             if(rainbow == 1)
@@ -351,6 +361,36 @@ namespace dlinktester
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void button6_Click_1(object sender, EventArgs e)
+        {
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.Title = "Open Working Ip output file";
+                dlg.Filter = "Text files | *.txt";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    workingIpPath = dlg.FileName;
+                    button6.ForeColor = Color.Green;
+                }
+            }
+        }
+
+        private void button7_Click_1(object sender, EventArgs e)
+        {
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.Title = "Open all Ip output file";
+                dlg.Filter = "Text files | *.txt";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    allIpPath = dlg.FileName;
+                    button7.ForeColor = Color.Green;
+                }
+            }
         }
     }
 }

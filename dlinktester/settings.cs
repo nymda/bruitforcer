@@ -67,7 +67,6 @@ namespace dlinktester
         {
             ((Control)sender).Capture = false;
             moving = true;
-            panel1.Capture = true;
             offset = MousePosition;
             original = this.Location;
         }
@@ -86,7 +85,6 @@ namespace dlinktester
         void panel1_PreviewMouseUp(object sender, MouseEventArgs e)
         {
             moving = false;
-            panel1.Capture = false;
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
